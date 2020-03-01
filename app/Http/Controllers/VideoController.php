@@ -10,23 +10,14 @@ class VideoController extends Controller
 {
     public function __construct()
     {
-        // $this->middleware('auth:api', 
-        // ['except' => 
-        //     [
-        //         'showVideos', 
-        //         'create', 
-        //         'formVideoEdit', 
-        //         'update',
-        //         'delete'
-        //     ]
-        // ]);
+
     }
 
     public function showVideos()
     {
         $video = Video::all();
-        return $video != null ? 
-            response()->json(['Ok' => 200, 'video' => $video]) : 
+        return $video != null ?
+            response()->json(['Ok' => 200, 'video' => $video]) :
             response('No exist data', 404);
     }
 
@@ -63,7 +54,7 @@ class VideoController extends Controller
         Video::find($id)->delete();
         return response('Ok', 200);
     }
-    
+
     private function existsId($id)
     {
         $video = Video::find($id);

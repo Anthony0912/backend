@@ -20,16 +20,17 @@ class TestEmail extends Mailable
 
     public function build()
     {
+        
         $address = 'yotubekids@information.com';
-        $subject = 'This is a demo!';
+        $subject = $this->data['subject'];
         $name = 'Youtube Kids';
         
-        return $this->view('emails')
+        return $this->markdown($this->data['markdown'])
                     ->from($address, $name)
                     ->cc($address, $name)
                     ->bcc($address, $name)
                     ->replyTo($address, $name)
                     ->subject($subject)
-                    ->with([ 'test_message' => $this->data['message'] ]);
+                    ->with(['token' => $this->data['token']]);
     }
 }

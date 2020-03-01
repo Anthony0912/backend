@@ -1,1 +1,0 @@
-<h1>Vista de correos</h1>
