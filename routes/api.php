@@ -14,6 +14,8 @@ Route::group([
     Route::post('me', 'AuthController@me');
     Route::post('sendPasswordResetLink', 'ResetPasswordController@sendEmail');
     Route::post('resetPassword', 'ChangePasswordController@process');
+    Route::post('sendVerificationAccountLoginLink', 'VerificationAccountLoginController@sendEmail');
+    Route::post('VerificationAccountSignup', 'VerificationAccountSignupController@verificationAccount');
 
     //video
     Route::get('video', 'VideoController@showVideos');
@@ -21,6 +23,6 @@ Route::group([
     Route::get('video/{id}', 'VideoController@formVideoEdit');
     Route::put('video/{id}', 'VideoController@update');
     Route::delete('video/{id}', 'VideoController@delete');
-    
+
 
 });

@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Video extends Model
+class VerificationAccount extends Model
 {
-    protected $table = 'videos';
+    protected $table = 'verification_accounts';
 
     protected $fillable = [
         'id_user',
-        'name_video',
-        'url',
+        'email',
+        'activated'
     ];
 }

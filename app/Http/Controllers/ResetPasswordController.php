@@ -28,7 +28,7 @@ class ResetPasswordController extends Controller
         Mail::to($request->email)->send(new TestEmail($data));
     }
 
-    public function createEmail($token)
+    private function createEmail($token)
     {
         return [
             'token' => $token,
@@ -36,6 +36,7 @@ class ResetPasswordController extends Controller
             'markdown' => 'Email.ResetPassword'
         ];
     }
+
     public function createToken($request)
     {
         $oldToken = ResetPassword::where('email', $request->email)->first();

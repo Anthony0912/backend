@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersVideos extends Migration
+class CreateVerificationAccountsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateUsersVideos extends Migration
      */
     public function up()
     {
-        Schema::create('users_videos', function (Blueprint $table) {
+        Schema::create('verification_accounts', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user');
-            $table->foreign('user')->references('id')->on('users');
-            $table->integer('video');
-            $table->foreign('video')->references('id')->on('videos');
+            $table->integer('id_user');
+            $table->string('email')->index();
+            $table->boolean('activated')->default(false);
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ class CreateUsersVideos extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users_videos');
+        Schema::dropIfExists('verification_accounts');
     }
 }

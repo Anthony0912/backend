@@ -7,6 +7,8 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Model implements JWTSubject
 {
+    protected $table = 'users';
+
     protected $fillable = [
         'first_name',
         'last_name',
