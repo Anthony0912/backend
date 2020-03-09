@@ -8,7 +8,7 @@ Route::group([
 
     //User
     Route::post('login', 'AuthController@login');
-    //Route::post('factorAuthenticationResendToken', 'FactorAuthenticationController@factorAuthenticationResendToken');
+    Route::post('resendSms', 'AuthController@resendSms');
     Route::post('factorAuthentication', 'FactorAuthenticationController@factorAuthentication');
     Route::post('signup', 'AuthController@signup');
     Route::post('verificationAccount', 'VerificationAccountController@verificationAccount');
