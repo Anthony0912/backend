@@ -12,18 +12,18 @@ class ChangePasswordController extends Controller
 {
     public function process(ChangePasswordRequest $request)
     {
-        return $this->getPasswordResetTableRow($request) ? $this->changePassword($request) : $this->tokenNoFoundResponse();
+        return ($this->getPasswordResetTableRow($request) && !empty($request->verify)) ? $this->changePassword($request) : $this->tokenNoFoundResponse();
     }
 
     public function getPasswordResetTableRow($request)
     {
-        return ResetPassword::where(['email' => $request->email, 'token' => $request->token]);
+        return ResetPassword::where(['email' => $request->email, 'id_verify' => $request->verify]);
     }
 
-    private function tokenNoFoundResponse()
+    private function codeVerifyNoFoundResponse()
     {
         return response()->json([
-            'error' => 'Token or email is incorrecto'
+            'error' => 'code verify or email is incorrecto'
         ], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 

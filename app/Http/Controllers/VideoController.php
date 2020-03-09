@@ -8,11 +8,6 @@ use App\Http\Requests\VideoRequest;
 
 class VideoController extends Controller
 {
-    public function __construct()
-    {
-
-    }
-
     public function showVideos()
     {
         $video = Video::all();

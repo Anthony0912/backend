@@ -6,14 +6,20 @@ use App\Mail\TestEmail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\SignUpRequest;
+use Illuminate\Http\Request;
 use App\Models\VerificationAccount;
+use App\Models\FactorAuthentication;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\User;
+use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Crypt;
+use DateTime;
 
 class AuthController extends Controller
 {
+
+    protected $client;
     /**
      * Create a new AuthController instance.
      *
@@ -21,6 +27,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
+        $this->client = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
         $this->middleware('auth:api', ['except' => ['login', 'signup']]);
     }
 
@@ -29,69 +36,135 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
+    public function login(Request $request)
     {
-        $credentials = request(['email', 'password']);
-        $verification = VerificationAccount::where('email', $credentials['email'])->first();
-        if(!$verification->activated)
-        {
-            return response()->json(['error' => 'Please vefication account in your email'], 401);
+        if (!$token = $this->verifyCredential($request)) {
+            return response()->json(
+                [
+                    'error' => 'Email or password invalid.'
+                ], Response::HTTP_NOT_FOUND);
         }
-        if (!$token = auth()->attempt($credentials))
-        {
-            return response()->json(['error' => 'Email or password does\'t exits'], 401);
+        $id = auth()->user()->id;
+        if (!$this->verifyAccountActivated($id)) {
+            return response()->json(
+                [
+                    'error' => 'Please confirm the validation of your account to the email that has been sent to you.'
+                ], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->respondWithToken($token);
+        if (!$factorAuth = FactorAuthentication::where('id_user', $id)->first()) {
+            $verify = $this->createdSms(auth()->user()->code_country, auth()->user()->cellphone);
+            FactorAuthentication::create(['id_user' => $id, 'id_verify' => $verify]);
+            return response()->json(
+                [
+                    'id' => $id,
+                    'token' => $token
+                ], Response::HTTP_CREATED);
+        }
+    }
+
+    // public function resendSms()
+    // {
+    //     $factor = $this->findFactorAuthentication($request->data['id']);
+    //     $factor->update(['id_verify' => $verify]);
+    //     return response()->json(
+    //         [
+    //             'data' => $id,
+    //             'token' => $token
+    //         ], Response::HTTP_OK);
+    //     return response()->json(['error' => 'Not send verify.'], Response::HTTP_NOT_FOUND);
+    // }
+
+    private function verifyCredential($request)
+    {
+        return auth()->attempt(['email'=>$request->email, 'password' => $request->password]);
+    }
+
+    private function verifyAccountActivated($id)
+    {
+        $vfa = VerificationAccount::where('id_user', $id)->first();
+        return $vfa->activated;
+    }
+
+    private function createdSms($code_country, $cellphone)
+    {
+        $verify = Str::random(6);
+        $this->client->messages->create(
+        '+' . $code_country . $cellphone,
+            array(
+                'from' => env('TWILIO_SMS'),
+                'body' => 'Hi, you tried to log in to youtube kids, use this verify number: '.$verify.'. Have a nice day!'
+            )
+        );
+        return $verify;
     }
 
     public function signup(SignUpRequest $request)
     {
-        $user = User::create($request->all());
-        VerificationAccount::create(['id_user' => $user['id'],'email' => $request->email]);
-        $credentials = ['email' => $request->email, 'password' => $request->password];
-        $token = auth()->attempt($credentials);
-        $this->send($request, $token);
-        return $this->respondWithToken($token);
+        if($this->validatedAge($request->birthday) >= 18)
+        {
+            $user = User::create($request->all());
+            $this->createVerifyAccount($user);
+            $verify = $this->createCryptVerify($user->id);
+            $this->send($user->email, $verify);
+            return response()->json([
+                'error' => 'Register successfully and email send',
+                Response::HTTP_CREATED]);
+        }
+        return response()->json(
+            [
+                'error' => 'You are not of legal age, you cannot register.'
+            ],
+            Response::HTTP_NOT_FOUND);
+
     }
 
-    public function send($request,$token)
+    private function validatedAge($birthday)
     {
-        $data = $this->createEmail($token);
-        Mail::to($request->email)->send(new TestEmail($data));
+        date_default_timezone_set('America/Costa_Rica');
+        $tempBirthday = new DateTime($birthday);
+        $now = new DateTime();
+        $years = $now->diff($tempBirthday);
+        return $years->y;
     }
 
-    public function createEmail($token)
+    private function createVerifyAccount($user)
+    {
+        return VerificationAccount::create(['id_user' => $user->id ,'email' => $user->email]);
+    }
+
+    private function createCryptVerify($id)
+    {
+        return md5($id);
+    }
+
+    private function send($email, $verify)
+    {
+        $data = $this->createEmail($verify);
+        Mail::to($email)->send(new TestEmail($data));
+    }
+
+    private function createEmail($verify)
     {
         return [
-            'token' => $token,
+            'verify' => $verify,
             'subject' => 'Link Verification Account',
             'markdown' => 'Email.VerificationAccount'
         ];
     }
 
-    public function failedResponse()
+    private function failedResponse()
     {
         return response()->json([
-            'error' => 'Email does\'t found on our database'
+            'error' => 'Could not make change to database'
         ], Response::HTTP_NOT_FOUND);
     }
 
-    public function successResponse()
+    private function successResponse()
     {
         return response()->json([
-            'error' => 'Reset email is send successfully, please check your inbox.'
+            'error' => 'successfully.'
         ], Response::HTTP_OK);
-    }
-
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function me()
-    {
-        return response()->json(auth()->user());
     }
 
     /**
@@ -104,32 +177,5 @@ class AuthController extends Controller
         auth()->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
-    }
-
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh()
-    {
-        return $this->respondWithToken(auth()->refresh());
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * (60 * 60),
-            'user' => auth()->user()->id
-        ]);
     }
 }

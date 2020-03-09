@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ResetPassword extends Model
+class FactorAuthentication extends Model
 {
-    protected $table = 'reset_passwords';
+    protected $table = 'factor_authentications';
 
     protected $fillable = [
-        'email',
+        'id_user',
         'id_verify'
     ];
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVerificationAccountsTable extends Migration
+class CreateFactorAuthenticationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateVerificationAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('verification_accounts', function (Blueprint $table) {
+        Schema::create('factor_authentications', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('id_user');
-            $table->string('email')->index();
-            $table->boolean('activated')->default(false);
+            $table->string('id_verify');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateVerificationAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('verification_accounts');
+        Schema::dropIfExists('factor_authentications');
     }
 }

@@ -14,61 +14,60 @@ class ResetPasswordController extends Controller
 {
     public function sendEmail(ResetPasswordRequest $request)
     {
-        if ($this->validationEmail($request->email)) {
+        if (!$this->validationEmail($request->email)) {
             return $this->failedResponse();
         }
-        $this->send($request);
+        $verify = $this->createVerify($request->email);
+        $this->send($request->email, $verify);
         return $this->successResponse();
     }
 
-    public function send($request)
+    private function validationEmail($email)
     {
-        $token = $this->createToken($request);
-        $data = $this->createEmail($token);
-        Mail::to($request->email)->send(new TestEmail($data));
+        return User::where('email', $email)->first();
     }
 
-    private function createEmail($token)
+    public function send($email, $verify)
+    {
+        $data = $this->createEmail($verify);
+        Mail::to($email)->send(new TestEmail($data));
+    }
+
+    private function createEmail($verify)
     {
         return [
-            'token' => $token,
+            'verify' => $verify,
             'subject' => 'Change of password',
             'markdown' => 'Email.ResetPassword'
         ];
     }
 
-    public function createToken($request)
+    private function createVerify($email)
     {
-        $oldToken = ResetPassword::where('email', $request->email)->first();
-        if ($oldToken) {
-            return $oldToken;
+        if ($oldVerify = ResetPassword::where('email', $email)->first()) {
+            return $oldVerify->id_verify;
         }
-        $token = Str::random(60);
-        $this->saveToken($request, $token);
-        return $token;
+        $verify = Str::random(100);
+        $this->saveVerify($email, $verify);
+        return $verify;
     }
 
-    public function saveToken($request, $token)
+    private function saveVerify($email, $verify)
     {
         ResetPassword::create([
-            'email' => $request->email,
-            'token' => $token
+            'email' => $email,
+            'id_verify' => $verify
         ]);
     }
 
-    public function validationEmail($email)
-    {
-        return !User::where('email', $email)->first();
-    }
-
-    public function failedResponse()
+    private function failedResponse()
     {
         return response()->json([
             'error' => 'Email does\'t found on our database'
         ], Response::HTTP_NOT_FOUND);
     }
 
-    public function successResponse()
+    private function successResponse()
     {
         return response()->json([
             'error' => 'Reset email is send successfully, please check your inbox.'

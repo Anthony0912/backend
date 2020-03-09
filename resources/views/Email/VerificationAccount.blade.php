@@ -10,7 +10,7 @@
     {{-- Subcopy --}}
     @slot('subcopy')
         @component('mail::subcopy')
-            @component('mail::button', ['url' => 'http://localhost:4200/verification-account-signup?token='.$token])
+            @component('mail::button', ['url' => 'http://localhost:4200/verification-account-signup?verify='.$verify])
                 Confirm account
             @endcomponent
         @endcomponent

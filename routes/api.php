@@ -8,14 +8,15 @@ Route::group([
 
     //User
     Route::post('login', 'AuthController@login');
+    //Route::post('factorAuthenticationResendToken', 'FactorAuthenticationController@factorAuthenticationResendToken');
+    Route::post('factorAuthentication', 'FactorAuthenticationController@factorAuthentication');
     Route::post('signup', 'AuthController@signup');
+    Route::post('verificationAccount', 'VerificationAccountController@verificationAccount');
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('me', 'AuthController@me');
     Route::post('sendPasswordResetLink', 'ResetPasswordController@sendEmail');
     Route::post('resetPassword', 'ChangePasswordController@process');
-    Route::post('sendVerificationAccountLoginLink', 'VerificationAccountLoginController@sendEmail');
-    Route::post('VerificationAccountSignup', 'VerificationAccountSignupController@verificationAccount');
 
     //video
     Route::get('video', 'VideoController@showVideos');

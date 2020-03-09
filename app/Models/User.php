@@ -13,6 +13,7 @@ class User extends Model implements JWTSubject
         'first_name',
         'last_name',
         'country',
+        'code_country',
         'cellphone',
         'birthday' ,
         'email',

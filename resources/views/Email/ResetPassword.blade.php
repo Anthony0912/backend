@@ -10,7 +10,7 @@
     {{-- Subcopy --}}
     @slot('subcopy')
         @component('mail::subcopy')
-            @component('mail::button', ['url' => 'http://localhost:4200/response-password-reset?token='.$token['token']])
+            @component('mail::button', ['url' => 'http://localhost:4200/response-password-reset?verify='.$verify])
                 Reset Password
             @endcomponent
         @endcomponent

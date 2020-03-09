@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateResetPasswords extends Migration
+class CreateVerificationAccountsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateResetPasswords extends Migration
      */
     public function up()
     {
-        Schema::create('reset_passwords', function (Blueprint $table) {
+        Schema::create('verification_accounts', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('email')->index();
-            $table->string('id_verify');
+            $table->integer('id_user');
+            $table->string('email');
+            $table->boolean('activated')->default(false);
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateResetPasswords extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reset_passwords');
+        Schema::dropIfExists('verification_accounts');
     }
 }
