@@ -66,16 +66,24 @@ class AuthController extends Controller
     public function resendSms(Request $request)
     {
         $id = $request->data['id'];
-        $user = User::find($id);
         $verify = $this->createVerifySms();
         $factor = $this->findFactorAuthentication($id);
-        $factor->update(['id_verify' => $verify]);
-        $this->createdSms($user->code_country, $user->cellphone, $verify);
-        return response()->json(
-            [
-                'data' => $id
-            ], Response::HTTP_OK);
-        //return response()->json(['error' => 'Not send verify.'], Response::HTTP_NOT_FOUND);
+        if ($this->updateCodeFactorAuthentication($factor, $verify))
+        {
+            $user = User::find($id);
+            $this->createdSms($user->code_country, $user->cellphone, $verify);
+            return response()->json(
+                [
+                    'error' => 'Code update',
+                ], Response::HTTP_OK);
+        }
+        return response()->json(['error' => 'Not send verify.'], Response::HTTP_NOT_FOUND);
+    }
+
+    private function updateCodeFactorAuthentication($factor, $verify)
+    {
+        $factor->fill(['id_verify' => $verify]);
+        return $factor->update();
     }
 
     private function findFactorAuthentication($id)
@@ -118,13 +126,13 @@ class AuthController extends Controller
             $verify = $this->createCryptVerify($user->id);
             $this->send($user->email, $verify);
             return response()->json([
-                'error' => 'Register successfully and email send'
+                'error' => 'Register successfully and email send',
             ], Response::HTTP_CREATED);
         }
         return response()->json(
             [
                 'error' => 'You are not of legal age, you cannot register.',
-            ],Response::HTTP_NOT_FOUND);
+            ], Response::HTTP_NOT_FOUND);
 
     }
 
@@ -152,7 +160,6 @@ class AuthController extends Controller
         $data = $this->createEmail($verify);
         Mail::to($email)->send(new TestEmail($data));
     }
-
 
     private function createEmail($verify)
     {
