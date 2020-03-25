@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use DateTime;
-use App\Models\User;
-use Twilio\Rest\Client;
-use App\Mail\TestEmail;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\VerificationAccount;
 use App\Http\Requests\SignUpRequest;
+use App\Mail\TestEmail;
 use App\Models\FactorAuthentication;
+use App\Models\User;
+use App\Models\VerificationAccount;
+use DateTime;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
+use Twilio\Rest\Client;
 
 class AuthController extends Controller
 {
@@ -51,11 +51,19 @@ class AuthController extends Controller
                 ], Response::HTTP_NOT_FOUND);
         }
 
+        $verify = $this->createVerifySms();
         if (!$factorAuth = $this->findFactorAuthentication($id)) {
-            $verify = $this->createVerifySms();
             FactorAuthentication::create(['id_user' => $id, 'id_verify' => $verify]);
             $this->createdSms(auth()->user()->code_country, auth()->user()->cellphone, $verify);
             return response()->json(
+                [
+                    'id' => $id,
+                    'token' => $token,
+                ], Response::HTTP_CREATED);
+        } else {
+            $this->updateCodeFactorAuthentication($factorAuth, $verify);
+            $this->createdSms(auth()->user()->code_country, auth()->user()->cellphone, $verify);
+           return response()->json(
                 [
                     'id' => $id,
                     'token' => $token,
@@ -68,8 +76,7 @@ class AuthController extends Controller
         $id = $request->data['id'];
         $verify = $this->createVerifySms();
         $factor = $this->findFactorAuthentication($id);
-        if ($this->updateCodeFactorAuthentication($factor, $verify))
-        {
+        if ($this->updateCodeFactorAuthentication($factor, $verify)) {
             $user = User::find($id);
             $this->createdSms($user->code_country, $user->cellphone, $verify);
             return response()->json(

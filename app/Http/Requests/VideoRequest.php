@@ -24,9 +24,9 @@ class VideoRequest extends FormRequest
     public function rules()
     {
         return [
-            'name_video' => 'string|max:255|required',
-            'url' => 'string|max:255|required',
-            'activated' => 'string|max:5|required'
+            'name_video' => 'max:255|required',
+            'url' => 'max:255|required',
+            'status' => 'required'
         ];
     }
 }

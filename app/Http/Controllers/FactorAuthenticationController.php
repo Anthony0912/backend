@@ -33,25 +33,6 @@ class FactorAuthenticationController extends Controller
     {
         return FactorAuthentication::where('id_user', $id)->first();
     }
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function me()
-    {
-        return response()->json(auth()->user());
-    }
-
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh()
-    {
-        return $this->respondWithToken(auth()->refresh());
-    }
 
     /**
      * Get the token array structure.

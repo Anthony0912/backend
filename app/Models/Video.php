@@ -9,8 +9,8 @@ class Video extends Model
     protected $table = 'videos';
 
     protected $fillable = [
-        'id_user',
         'name_video',
         'url',
+        'status'
     ];
 }

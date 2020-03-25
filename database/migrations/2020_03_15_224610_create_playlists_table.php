@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVerificationAccountsTable extends Migration
+class CreatePlaylistsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateVerificationAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('verification_accounts', function (Blueprint $table) {
+        Schema::create('playlists', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('id_user');
-            $table->foreign('id_user')->references('id')->on('users');
-            $table->string('email');
-            $table->boolean('activated')->default(false);
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateVerificationAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('verification_accounts');
+        Schema::dropIfExists('playlists');
     }
 }
