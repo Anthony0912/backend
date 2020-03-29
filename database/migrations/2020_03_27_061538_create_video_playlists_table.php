@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePlaylistsTable extends Migration
+class CreateVideoPlaylistsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class CreatePlaylistsTable extends Migration
      */
     public function up()
     {
-        Schema::create('playlists', function (Blueprint $table) {
+        Schema::create('video_playlists', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name_playlist');
+            $table->integer('id_user_video');
+            $table->foreign('id_user_video')->references('id')->on('user_videos');
+            $table->integer('id_user_playlist');
+            $table->foreign('id_user_playlist')->references('id')->on('user_playlists');
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ class CreatePlaylistsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('playlists');
+        Schema::dropIfExists('video_playlists');
     }
 }

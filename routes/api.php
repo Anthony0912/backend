@@ -32,4 +32,12 @@ Route::group([
     Route::get('videoEdit/{id}', 'VideoController@videoEdit');
     Route::patch('videoUpdate', 'VideoController@videoUpdate');
     Route::delete('video/{id}', 'VideoController@videoDelete');
+
+    //playlist
+    Route::post('playlistCreate','playlistController@playlistCreate');
+    Route::get('playlist/{id}', 'playlistController@playlistShow');
+    Route::get('playlistEdit/{id}', 'playlistController@playlistEdit');
+    Route::patch('playlistUpdate', 'playlistController@playlistUpdate');
+    Route::delete('playlist/{id}', 'playlistController@playlistDelete');
+
 });

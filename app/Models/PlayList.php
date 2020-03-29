@@ -9,6 +9,6 @@ class PlayList extends Model
     protected $table = 'playlists';
 
     protected $fillable = [
-        'name'
+        'name_playlist'
     ];
 }
