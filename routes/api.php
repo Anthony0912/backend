@@ -34,10 +34,20 @@ Route::group([
     Route::delete('video/{id}', 'VideoController@videoDelete');
 
     //playlist
-    Route::post('playlistCreate','playlistController@playlistCreate');
-    Route::get('playlist/{id}', 'playlistController@playlistShow');
-    Route::get('playlistEdit/{id}', 'playlistController@playlistEdit');
-    Route::patch('playlistUpdate', 'playlistController@playlistUpdate');
-    Route::delete('playlist/{id}', 'playlistController@playlistDelete');
+    Route::post('playlistCreate','PlayListController@playlistCreate');
+    Route::get('playlist/{id}', 'PlayListController@playlistShow');
+    Route::get('playlistEdit/{id}', 'PlayListController@playlistEdit');
+    Route::patch('playlistUpdate', 'PlayListController@playlistUpdate');
+    Route::delete('playlist/{id}', 'PlayListController@playlistDelete');
+
+
+    //profiles
+    Route::get('profile/{id}', 'ProfileController@profileShow');
+    Route::get('profileChangeStatus/{id}', 'ProfileController@ProfileChangeStatus');
+    Route::post('profileCreate', 'ProfileController@profileCreate');
+    Route::get('profileEdit/{id}', 'ProfileController@profileEdit');
+    Route::patch('profileUpdate', 'ProfileController@profileUpdate');
+    Route::patch('profilePasswordReset', 'ProfileController@profilePasswordReset');
+    Route::delete('profile/{id}', 'ProfileController@profileDelete');
 
 });
