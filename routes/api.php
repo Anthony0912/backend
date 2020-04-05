@@ -14,6 +14,7 @@ Route::group([
     //user sign up and verify account
     Route::post('signup', 'AuthController@signup');
     Route::post('verificationAccount', 'VerificationAccountController@verificationAccount');
+    Route::get('countries', 'AuthController@getCodeCountries');
 
     //logout
     Route::post('logout', 'AuthController@logout');
@@ -35,6 +36,8 @@ Route::group([
 
     //playlist
     Route::post('playlistCreate','PlayListController@playlistCreate');
+    Route::post('videoPlaylistCreate','PlayListController@videoPlaylistCreate');
+    Route::get('videoPlaylist/{id_user}/{id_playlist}', 'PlayListController@videoPlaylist');
     Route::get('playlist/{id}', 'PlayListController@playlistShow');
     Route::get('playlistEdit/{id}', 'PlayListController@playlistEdit');
     Route::patch('playlistUpdate', 'PlayListController@playlistUpdate');
@@ -49,5 +52,6 @@ Route::group([
     Route::patch('profileUpdate', 'ProfileController@profileUpdate');
     Route::patch('profilePasswordReset', 'ProfileController@profilePasswordReset');
     Route::delete('profile/{id}', 'ProfileController@profileDelete');
+
 
 });

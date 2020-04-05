@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 use Twilio\Rest\Client;
+use App\Models\Country;
 
 class AuthController extends Controller
 {
@@ -27,7 +28,7 @@ class AuthController extends Controller
     public function __construct()
     {
         $this->client = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
-        $this->middleware('auth:api', ['except' => ['login', 'signup', 'resendSms', 'findFactorAuthentication']]);
+        $this->middleware('auth:api', ['except' => ['login', 'signup', 'resendSms', 'findFactorAuthentication', 'getCodeCountries']]);
     }
 
     /**
@@ -207,5 +208,10 @@ class AuthController extends Controller
         auth()->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    public function getCodeCountries(){
+        $countries = Country::all();
+        return response()->json($countries, Response::HTTP_OK);
     }
 }
