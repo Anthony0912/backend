@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
+use Illuminate\Validation\Rule;
 use App\Http\Requests\SignUpRequest;
 use App\Mail\TestEmail;
 use App\Models\FactorAuthentication;
 use App\Models\User;
 use App\Models\VerificationAccount;
-use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,10 +25,19 @@ class AuthController extends Controller
      *
      * @return void
      */
+
     public function __construct()
     {
         $this->client = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
-        $this->middleware('auth:api', ['except' => ['login', 'signup', 'resendSms', 'findFactorAuthentication', 'getCodeCountries']]);
+        $this->middleware('auth:api', ['except' => [
+            'login',
+            'signup',
+            'resendSms',
+            'getCodeCountries',
+            'settingAccountEdit',
+            'settingAccountUpdate',
+            'findFactorAuthentication',
+        ]]);
     }
 
     /**
@@ -36,20 +45,25 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function login(Request $request)
     {
         if (!$token = $this->verifyCredential($request)) {
             return response()->json(
                 [
                     'error' => 'Email or password invalid.',
-                ], Response::HTTP_NOT_FOUND);
+                ],
+                Response::HTTP_NOT_FOUND
+            );
         }
         $id = auth()->user()->id;
         if (!$this->verifyAccountActivated($id)) {
             return response()->json(
                 [
                     'error' => 'Please confirm the validation of your account to the email that has been sent to you.',
-                ], Response::HTTP_NOT_FOUND);
+                ],
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         $verify = $this->createVerifySms();
@@ -60,16 +74,45 @@ class AuthController extends Controller
                 [
                     'id' => $id,
                     'token' => $token,
-                ], Response::HTTP_CREATED);
+                ],
+                Response::HTTP_CREATED
+            );
         } else {
             $this->updateCodeFactorAuthentication($factorAuth, $verify);
             $this->createdSms(auth()->user()->code_country, auth()->user()->cellphone, $verify);
-           return response()->json(
+            return response()->json(
                 [
                     'id' => $id,
                     'token' => $token,
-                ], Response::HTTP_CREATED);
+                ],
+                Response::HTTP_CREATED
+            );
         }
+    }
+    public function settingAccountEdit($id)
+    {
+        $user = User::find($id);
+        return response()->json($user, Response::HTTP_OK);
+    }
+
+    public function settingAccountUpdate(Request $request)
+    {
+        if ($this->existsId($request->id)) {
+            return response()->json(['error' => 'ID user not exist'], Response::HTTP_NOT_FOUND);
+        }
+        request()->validate([
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'country' => 'required|string',
+            'code_country' => 'required|integer',
+            'cellphone' => 'required|integer',
+            'birthday' => 'required|date',
+            'email' => ['required', 'email', Rule::unique('users')->ignore($request->id)]
+        ]);
+
+        $user = User::find($request->id);
+        $user->update($request->except(['id']));
+        return response()->json(['error' => 'Playlist update'], Response::HTTP_OK);
     }
 
     public function resendSms(Request $request)
@@ -83,9 +126,17 @@ class AuthController extends Controller
             return response()->json(
                 [
                     'error' => 'Code update',
-                ], Response::HTTP_OK);
+                ],
+                Response::HTTP_OK
+            );
         }
         return response()->json(['error' => 'Not send verify.'], Response::HTTP_NOT_FOUND);
+    }
+
+    private function existsId($id)
+    {
+        $user = User::find($id);
+        return $user === null || empty($id);
     }
 
     private function updateCodeFactorAuthentication($factor, $verify)
@@ -140,8 +191,9 @@ class AuthController extends Controller
         return response()->json(
             [
                 'error' => 'You are not of legal age, you cannot register.',
-            ], Response::HTTP_NOT_FOUND);
-
+            ],
+            Response::HTTP_NOT_FOUND
+        );
     }
 
     private function validatedAge($birthday)
@@ -183,6 +235,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function me()
     {
         return response()->json(auth()->user());
@@ -193,16 +246,18 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        return $this->respondWithToken(auth()->$this->refresh());
     }
 
     /**
-     * Log the user out (Invalidate the token).
+     * Log the user out ( Invalidate the token ).
      *
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function logout()
     {
         auth()->logout();
@@ -210,7 +265,8 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    public function getCodeCountries(){
+    public function getCodeCountries()
+    {
         $countries = Country::all();
         return response()->json($countries, Response::HTTP_OK);
     }

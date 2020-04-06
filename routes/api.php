@@ -15,6 +15,8 @@ Route::group([
     Route::post('signup', 'AuthController@signup');
     Route::post('verificationAccount', 'VerificationAccountController@verificationAccount');
     Route::get('countries', 'AuthController@getCodeCountries');
+    Route::get('settingAccount/{id}', 'AuthController@settingAccountEdit');
+    Route::patch('settingAccount', 'AuthController@settingAccountUpdate');
 
     //logout
     Route::post('logout', 'AuthController@logout');
@@ -35,8 +37,8 @@ Route::group([
     Route::delete('video/{id}', 'VideoController@videoDelete');
 
     //playlist
-    Route::post('playlistCreate','PlayListController@playlistCreate');
-    Route::post('videoPlaylistCreate','PlayListController@videoPlaylistCreate');
+    Route::post('playlistCreate', 'PlayListController@playlistCreate');
+    Route::post('videoPlaylistCreate', 'PlayListController@videoPlaylistCreate');
     Route::get('videoPlaylist/{id_user}/{id_playlist}', 'PlayListController@videoPlaylist');
     Route::get('playlist/{id}', 'PlayListController@playlistShow');
     Route::get('playlistEdit/{id}', 'PlayListController@playlistEdit');
@@ -52,6 +54,4 @@ Route::group([
     Route::patch('profileUpdate', 'ProfileController@profileUpdate');
     Route::patch('profilePasswordReset', 'ProfileController@profilePasswordReset');
     Route::delete('profile/{id}', 'ProfileController@profileDelete');
-
-
 });
