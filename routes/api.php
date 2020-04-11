@@ -37,6 +37,8 @@ Route::group([
     Route::delete('video/{id}', 'VideoController@videoDelete');
 
     //playlist
+    Route::get('profile/playlists/{id}', 'playListController@showPlaylistInProfile');
+    Route::get('profile/playlists/videos/{id}', 'playListController@getVideosInProfile');
     Route::post('playlistCreate', 'PlayListController@playlistCreate');
     Route::post('videoPlaylistCreate', 'PlayListController@videoPlaylistCreate');
     Route::get('videoPlaylist/{id_user}/{id_playlist}', 'PlayListController@videoPlaylist');
@@ -54,4 +56,5 @@ Route::group([
     Route::patch('profileUpdate', 'ProfileController@profileUpdate');
     Route::patch('profilePasswordReset', 'ProfileController@profilePasswordReset');
     Route::delete('profile/{id}', 'ProfileController@profileDelete');
+    Route::post('profileLogin', 'ProfileController@profileLogin');
 });

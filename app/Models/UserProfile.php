@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,6 +21,6 @@ class UserProfile extends Model
 
     public function profile()
     {
-        return $this->belongsTo(Profile::class, 'id_profile');
+        return $this->belongsTo(User::class, 'id_profile');
     }
 }

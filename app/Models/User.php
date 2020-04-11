@@ -16,8 +16,11 @@ class User extends Model implements JWTSubject
         'code_country',
         'cellphone',
         'birthday' ,
+        'username',
+        'status',
+        'role',
         'email',
-        'password'
+        'password',
     ];
 
     // Rest omitted for brevity

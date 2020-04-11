@@ -31,7 +31,8 @@ class SignUpRequest extends FormRequest
             'cellphone' => 'required|integer',
             'birthday' => 'required|date',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:8|confirmed'
+            'password' => 'required|min:8|confirmed',
+            'role' => 'string'
         ];
     }
 }

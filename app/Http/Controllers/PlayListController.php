@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PlayListRequest;
 use App\Models\PlayList;
 use App\Models\UserPlayList;
+use App\Models\UserProfile;
 use App\Models\VideoPlayList;
 use App\Models\UserVideo;
-use App\Models\Video;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -217,5 +217,43 @@ class PlayListController extends Controller
     {
         $playlist = PlayList::find($id);
         return $playlist === null || empty($id);
+    }
+
+    public function showPlaylistInProfile($id)
+    {
+        $playlists = UserProfile::join('user_playlists', 'user_playlists.id_user', '=', 'user_profiles.id_user')
+            ->join('playlists', 'playlists.id', '=', 'user_playlists.id_playlist')
+            ->where('user_profiles.id_profile', '=', $id)
+            ->get();
+        $object = $this->getPlaylistProfile($playlists);
+        return response()->json($object, Response::HTTP_OK);
+    }
+
+    private function getPlaylistProfile($playlists){
+        $object = [];
+        foreach ($playlists as $value) {
+            if ($value->name_playlist != 'General') {
+                array_push($object, ['id' => $value->id_playlist, 'name' => $value->name_playlist]);
+            }
+        }
+        return $object;
+    }
+
+    public function getVideosInProfile($id){
+        $videos = UserPlayList::join('video_playlists', 'video_playlists.id_user_playlist', '=', 'user_playlists.id')
+            ->join('user_videos', 'user_videos.id', '=', 'video_playlists.id_user_video')
+            ->join('videos', 'videos.id', '=', 'user_videos.id_video')
+            ->where(['user_playlists.id_playlist' => $id, 'videos.status' => true])
+            ->get();
+        $object = $this->sortVideosProfile($videos);
+        return response()->json($object, Response::HTTP_OK);
+    }
+
+    public function sortVideosProfile($videos){
+        $object = [];
+        foreach ($videos as $value) {
+            array_push($object, $this->sortVideos($value->id, $value->name_video, $value->url, $value->status));
+        }
+        return $object;
     }
 }

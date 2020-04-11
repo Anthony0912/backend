@@ -18,7 +18,7 @@ class CreateUserProfilesTable extends Migration
             $table->integer('id_user');
             $table->foreign('id_user')->references('id')->on('users');
             $table->integer('id_profile');
-            $table->foreign('id_profile')->references('id')->on('profiles');
+            $table->foreign('id_profile')->references('id')->on('users');
             $table->timestamps();
         });
     }

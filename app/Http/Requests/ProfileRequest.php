@@ -27,8 +27,9 @@ class ProfileRequest extends FormRequest
             'first_name' => 'required',
             'last_name' => 'required',
             'birthday' => 'required|date',
-            'username' => 'required|unique:profiles',
-            'password' => 'required|numeric|confirmed|digits_between:6,6'
+            'username' => 'required|unique:users',
+            'password' => 'required|confirmed|max:6',
+            'role' => 'string'
         ];
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2ba5190db4871461c6d88c58dd392559",
+    "content-hash": "a7a957e71991441c5084e187d30cade5",
     "packages": [
         {
             "name": "authy/php",
@@ -609,6 +609,7 @@
                     "email": "jakub.onderka@gmail.com"
                 }
             ],
+            "abandoned": "php-parallel-lint/php-console-color",
             "time": "2018-09-29T17:23:10+00:00"
         },
         {
@@ -655,6 +656,7 @@
                 }
             ],
             "description": "Highlight PHP code in terminal",
+            "abandoned": "php-parallel-lint/php-console-highlighter",
             "time": "2018-09-29T18:48:56+00:00"
         },
         {
@@ -1901,6 +1903,54 @@
                 "uuid"
             ],
             "time": "2020-02-21T04:36:14+00:00"
+        },
+        {
+            "name": "sarav/laravel-multiauth",
+            "version": "0.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sarav-S/Laravel-Multiauth.git",
+                "reference": "5f6daa76e3faa57c45e50dad3e07d6a216a4793c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sarav-S/Laravel-Multiauth/zipball/5f6daa76e3faa57c45e50dad3e07d6a216a4793c",
+                "reference": "5f6daa76e3faa57c45e50dad3e07d6a216a4793c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Sarav\\Multiauth\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sarav",
+                    "email": "me@sarav.co"
+                }
+            ],
+            "description": "A Simple Laravel Package for handling multiple authentication",
+            "keywords": [
+                "Authentication",
+                "auth",
+                "laravel",
+                "laravel 5",
+                "login",
+                "multi",
+                "multiauth",
+                "multiple",
+                "signin",
+                "user"
+            ],
+            "time": "2015-12-24T09:22:00+00:00"
         },
         {
             "name": "sendgrid/php-http-client",
@@ -5774,5 +5824,6 @@
     "platform": {
         "php": "^7.2"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }

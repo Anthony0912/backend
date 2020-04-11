@@ -89,6 +89,7 @@ class AuthController extends Controller
             );
         }
     }
+
     public function settingAccountEdit($id)
     {
         $user = User::find($id);
