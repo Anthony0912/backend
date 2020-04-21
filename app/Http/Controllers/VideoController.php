@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\VideoRequest;
 use App\Models\PlayList;
 use App\Models\UserPlayList;
 use App\Models\UserVideo;
@@ -90,11 +89,10 @@ class VideoController extends Controller
         return $match[1];
     }
 
-    public function create(VideoRequest $request)
+    public function create(Request $request)
     {
-        $temp = $request->url;
-        if (!$this->formatUrl($temp)) {
-            return response()->json(['error' => 'Url invalid'], Response::HTTP_NOT_FOUND);
+        if (!$this->formatUrl($request->url)) {
+            return response()->json(['error' => ['url' => 'Url invalid']], Response::HTTP_NOT_FOUND);
         }
         $video = Video::create($this->video($request));
         $userVideo = UserVideo::create(
@@ -175,12 +173,8 @@ class VideoController extends Controller
         if ($this->existsId($request->id)) {
             return response()->json(['error' => 'ID video not exist'], Response::HTTP_NOT_FOUND);
         }
-        request()->validate([
-            'name_video' => 'required',
-            'url' => 'required',
-        ]);
         if (!$this->formatUrl($request->url)) {
-            return response()->json(['error' => 'Invalid Url'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => ['url' => 'Invalid Url']], Response::HTTP_NOT_FOUND);
         }
 
         $video = Video::find($request->id);

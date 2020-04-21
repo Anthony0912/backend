@@ -18,7 +18,7 @@ class ProfileController extends Controller
         if (!$token = $this->verifyCredential($request)) {
             return response()->json(
                 [
-                    'error' => 'username or password invalid.',
+                    'error' => ['user_pass' => 'Username or password invalid.'],
                 ],
                 Response::HTTP_NOT_FOUND
             );
@@ -41,8 +41,11 @@ class ProfileController extends Controller
             'user' => $id,
         ]);
     }
-    public function profileCreate(ProfileRequest $request)
+    public function profileCreate(Request $request)
     {
+        request()->validate([
+            'username' => Rule::unique('users')
+        ]);
         $profile = User::create($request->except(['id_user']));
         UserProfile::create(['id_user' => $request->id_user, 'id_profile' => $profile->id]);
         return response()->json(['error' => 'Created profile'], Response::HTTP_OK);
@@ -100,18 +103,14 @@ class ProfileController extends Controller
     public function profileUpdate(Request $request)
     {
         if ($this->existsId($request->id_profile)) {
-            return response()->json(['error' => 'ID video not exist'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => 'ID profile not exists'], Response::HTTP_NOT_FOUND);
         }
         request()->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'birthday' => 'required|date',
-            'username' => ['required', Rule::unique('users')->ignore($request->id_profile)]
+            'username' => Rule::unique('users')->ignore($request->id_profile)
         ]);
-
         $profile = User::find($request->id_profile);
         $profile->update($request->except(['id_profile']));
-        return response()->json(['error' => 'Video update'], Response::HTTP_OK);
+        return response()->json(['error' => 'Profile update'], Response::HTTP_OK);
     }
 
     public function profileDelete($id)
@@ -126,14 +125,9 @@ class ProfileController extends Controller
 
     public function profilePasswordReset(Request $request)
     {
-        request()->validate([
-            'username' => ['required', Rule::unique('users')->ignore($request->username, 'username')],
-            'password' => 'required|numeric|confirmed|min:6'
-        ]);
-
         $profile = User::where('username', $request->username)->first();
         if ($profile === null) {
-            return response()->json(['error' => 'username invalid'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => ['errorUsername' => 'Username invalid']], Response::HTTP_NOT_FOUND);
         } else {
             $profile->update(['password' => $request->password]);
             return response()->json(['error' => 'Password profile change'], Response::HTTP_OK);

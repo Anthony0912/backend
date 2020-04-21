@@ -51,7 +51,7 @@ class AuthController extends Controller
         if (!$token = $this->verifyCredential($request)) {
             return response()->json(
                 [
-                    'error' => 'Email or password invalid.',
+                    'error' => ['emailPass' => 'Email or password invalid.'],
                 ],
                 Response::HTTP_NOT_FOUND
             );
@@ -60,7 +60,7 @@ class AuthController extends Controller
         if (!$this->verifyAccountActivated($id)) {
             return response()->json(
                 [
-                    'error' => 'Please confirm the validation of your account to the email that has been sent to you.',
+                    'error' => ['confirm' => 'Please confirm the validation of your account to the email that has been sent to you.'],
                 ],
                 Response::HTTP_NOT_FOUND
             );
@@ -102,13 +102,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'ID user not exist'], Response::HTTP_NOT_FOUND);
         }
         request()->validate([
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'country' => 'required|string',
-            'code_country' => 'required|integer',
-            'cellphone' => 'required|integer',
-            'birthday' => 'required|date',
-            'email' => ['required', 'email', Rule::unique('users')->ignore($request->id)]
+            'email' => ['email', Rule::unique('users')->ignore($request->id)]
         ]);
 
         $user = User::find($request->id);
@@ -178,8 +172,11 @@ class AuthController extends Controller
         return Str::random(6);
     }
 
-    public function signup(SignUpRequest $request)
+    public function signup(Request $request)
     {
+        request()->validate([
+            'email' => Rule::unique('users')
+        ]);
         if ($this->validatedAge($request->birthday) >= 18) {
             $user = User::create($request->all());
             $this->createVerifyAccount($user);
@@ -191,7 +188,7 @@ class AuthController extends Controller
         }
         return response()->json(
             [
-                'error' => 'You are not of legal age, you cannot register.',
+                'errors' => ['birthday'=> 'You are not of legal age, you cannot register.'],
             ],
             Response::HTTP_NOT_FOUND
         );

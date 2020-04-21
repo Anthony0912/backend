@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PlayListRequest;
 use App\Models\PlayList;
 use App\Models\UserPlayList;
 use App\Models\UserProfile;
@@ -137,17 +136,6 @@ class PlayListController extends Controller
         return $match[1];
     }
 
-
-
-    private function selectIdVideo($object)
-    {
-        $id = [];
-        foreach ($object as $value) {
-            array_push($id, ['id_video' => $value->id_video]);
-        }
-        return $id;
-    }
-
     private function findVideoInPlayList($video_playlist)
     {
         return VideoPlayList::where($video_playlist)->first();
@@ -164,10 +152,10 @@ class PlayListController extends Controller
         return $temp;
     }
 
-    public function playlistCreate(PlayListRequest $request)
+    public function playlistCreate(Request $request)
     {
         if ($request->name_playlist === 'General') {
-            return response()->json(['error' => 'Name invalid'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => ['name_playlist' => 'Name playlist exists, it is not possible to use it.']], Response::HTTP_NOT_FOUND);
         }
         $playlist = PlayList::create(['name_playlist' => $request->name_playlist]);
         UserPlayList::create(['id_user' => $request->id_user, 'id_playlist' => $playlist->id]);
@@ -186,7 +174,7 @@ class PlayListController extends Controller
     public function playlistUpdate(Request $request)
     {
         if ($request->name_playlist === 'General') {
-            return response()->json(['error' => 'Name invalid'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => ['name_playlist' => 'Name playlist exists, it is not possible to use it.']], Response::HTTP_NOT_FOUND);
         }
 
         if ($this->existsId($request->id)) {
@@ -229,7 +217,8 @@ class PlayListController extends Controller
         return response()->json($object, Response::HTTP_OK);
     }
 
-    private function getPlaylistProfile($playlists){
+    private function getPlaylistProfile($playlists)
+    {
         $object = [];
         foreach ($playlists as $value) {
             if ($value->name_playlist != 'General') {
@@ -239,7 +228,8 @@ class PlayListController extends Controller
         return $object;
     }
 
-    public function getVideosInProfile($id){
+    public function getVideosInProfile($id)
+    {
         $videos = UserPlayList::join('video_playlists', 'video_playlists.id_user_playlist', '=', 'user_playlists.id')
             ->join('user_videos', 'user_videos.id', '=', 'video_playlists.id_user_video')
             ->join('videos', 'videos.id', '=', 'user_videos.id_video')
@@ -249,7 +239,8 @@ class PlayListController extends Controller
         return response()->json($object, Response::HTTP_OK);
     }
 
-    public function sortVideosProfile($videos){
+    public function sortVideosProfile($videos)
+    {
         $object = [];
         foreach ($videos as $value) {
             array_push($object, $this->sortVideos($value->id, $value->name_video, $value->url, $value->status));
