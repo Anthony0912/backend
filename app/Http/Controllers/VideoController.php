@@ -24,6 +24,20 @@ class VideoController extends Controller
         return response()->json($object, Response::HTTP_OK);
     }
 
+    public function getVideoSearch($id, $search)
+    {
+        $user_video_play = VideoPlayList::join('user_videos', 'user_videos.id', '=', 'video_playlists.id_user_video')
+            ->join('user_playlists', 'user_playlists.id', '=', 'video_playlists.id_user_playlist')
+            ->join('videos', 'videos.id', '=', 'user_videos.id_video')
+            ->join('playlists', 'playlists.id', '=', 'user_playlists.id_playlist')
+            ->where('videos.name_video', 'ilike', '%' . $search . '%')
+            ->where('user_videos.id_user', '=', $id)
+            ->where('user_playlists.id_user', '=', $id)
+            ->get();
+        $object = $this->sortPlayListWithVideos($user_video_play);
+        return response()->json($object, Response::HTTP_OK);
+    }
+
     private function objectUserVideoPlayList($id_user, $video, $playlist)
     {
         return [
@@ -92,7 +106,7 @@ class VideoController extends Controller
     public function create(Request $request)
     {
         if (!$this->formatUrl($request->url)) {
-            return response()->json(['error' => ['url' => 'Url invalid']], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => ['url' => 'Url invalid']], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         $video = Video::create($this->video($request));
         $userVideo = UserVideo::create(
@@ -101,11 +115,11 @@ class VideoController extends Controller
                 'id_video' => $video->id,
             ]
         );
-        $this->createdGeneralPlayList($request, $video, $userVideo);
-        return response()->json(['error' => 'Created video'], Response::HTTP_OK);
+        $this->createdGeneralPlayList($request, $userVideo);
+        return response()->json(['error' => 'Created video'], Response::HTTP_CREATED);
     }
 
-    private function createdGeneralPlayList($request, $video, $userVideo)
+    private function createdGeneralPlayList($request, $userVideo)
     {
         if (!$this->existsGeneralPlayList($request->id_user)) {
             $playlist = PlayList::create(['name_playlist' => 'General']);
@@ -174,7 +188,7 @@ class VideoController extends Controller
             return response()->json(['error' => 'ID video not exist'], Response::HTTP_NOT_FOUND);
         }
         if (!$this->formatUrl($request->url)) {
-            return response()->json(['error' => ['url' => 'Invalid Url']], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => ['url' => 'Invalid Url']], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $video = Video::find($request->id);

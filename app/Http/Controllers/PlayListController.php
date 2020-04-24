@@ -216,6 +216,25 @@ class PlayListController extends Controller
         $object = $this->getPlaylistProfile($playlists);
         return response()->json($object, Response::HTTP_OK);
     }
+    public function getVideosSearch($id, $search)
+    {
+        $videos = UserProfile::join('user_videos', 'user_videos.id_user', '=', 'user_profiles.id_user')
+            ->join('videos', 'videos.id', '=', 'user_videos.id_video')
+            ->select('videos.id', 'videos.name_video', 'videos.url')
+            ->where('videos.name_video', 'ilike', '%' . $search . '%')
+            ->where('videos.status', '=', true)
+            ->where('user_profiles.id_profile', '=', $id)
+            ->get();
+        $object = $this->findUrl($videos);
+        return response()->json($object, Response::HTTP_OK);
+    }
+
+    private function findUrl($object){
+        foreach ($object as $value) {
+            $value->url = $this->getUrl($value->url);
+        }
+        return $object;
+    }
 
     private function getPlaylistProfile($playlists)
     {

@@ -32,12 +32,14 @@ Route::group([
     Route::get('video/{id}', 'VideoController@showVideos');
     Route::post('videoCreate', 'VideoController@create');
     Route::get('videoChangeStatus/{id}', 'VideoController@videoChangeStatus');
+    Route::get('videoSearch/{id}/{search}', 'VideoController@getVideoSearch');
     Route::get('videoEdit/{id}', 'VideoController@videoEdit');
     Route::patch('videoUpdate', 'VideoController@videoUpdate');
     Route::delete('video/{id}', 'VideoController@videoDelete');
 
     //playlist
     Route::get('profile/playlists/{id}', 'playListController@showPlaylistInProfile');
+    Route::get('profile/search/{id}/{search}', 'PlayListController@getVideosSearch');
     Route::get('profile/playlists/videos/{id}', 'playListController@getVideosInProfile');
     Route::post('playlistCreate', 'PlayListController@playlistCreate');
     Route::post('videoPlaylistCreate', 'PlayListController@videoPlaylistCreate');
