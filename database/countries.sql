@@ -137,3 +137,5 @@ insert into countries (name, code) values ('Zimbawe','263');
 
 
 select * from countries
+select * from users
+

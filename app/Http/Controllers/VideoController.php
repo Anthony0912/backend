@@ -92,15 +92,9 @@ class VideoController extends Controller
         return [
             'id_video' => $id_video,
             'name_video' => $name_video,
-            'url' => $this->getUrl($url),
+            'url' => $url,
             'status' => $status,
         ];
-    }
-
-    private function getUrl($url)
-    {
-        preg_match('/src="([^"]+)"/', $url, $match);
-        return $match[1];
     }
 
     public function create(Request $request)
@@ -190,7 +184,6 @@ class VideoController extends Controller
         if (!$this->formatUrl($request->url)) {
             return response()->json(['error' => ['url' => 'Invalid Url']], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
         $video = Video::find($request->id);
         $video->update(['name_video' => $request->name_video, 'url' => $request->url]);
         return response()->json(['error' => 'Video update'], Response::HTTP_OK);
@@ -220,6 +213,6 @@ class VideoController extends Controller
 
     private function formatUrl($url)
     {
-        return preg_match_all('#<iframe width="560" height="315" src="https:\/\/www\.youtube\.com\/embed\/(.*)"(?:.*) frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen><\/iframe>#Usm', $url, $matches, PREG_SET_ORDER) === 1;
+        return preg_match_all('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $url, $matches, PREG_SET_ORDER) === 1;
     }
 }

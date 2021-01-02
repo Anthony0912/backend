@@ -8,13 +8,13 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.2",
+        "php": "^7.3|^8.0",
         "authy/php": "^3.0",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.2",
         "laravel/tinker": "^2.0",
         "sendgrid/sendgrid": "~7",
-        "twilio/sdk": "^6.0",
+        "twilio/sdk": "^6.15",
         "tymon/jwt-auth": "^1.0.0-rc.2"
     },
     "require-dev": {
