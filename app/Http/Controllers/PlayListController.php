@@ -125,17 +125,11 @@ class PlayListController extends Controller
         return [
             'id_video' => $id_video,
             'name_video' => $name_video,
-            'url' => $this->getUrl($url),
+            'url' => $url,
             'status' => $status,
         ];
     }
-
-    private function getUrl($url)
-    {
-        preg_match('/src="([^"]+)"/', $url, $match);
-        return $match[1];
-    }
-
+    
     private function findVideoInPlayList($video_playlist)
     {
         return VideoPlayList::where($video_playlist)->first();
