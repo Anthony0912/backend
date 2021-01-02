@@ -1,7 +1,7 @@
 @component('mail::layout')
     {{-- Header --}}
     @slot('header')
-        @component('mail::header', ['url' => 'http://localhost:4200'])
+        @component('mail::header', ['url' => 'https://youtubekids-fronted.herokuapp.com/'])
             <!-- header here -->
             Youtube Kids
         @endcomponent
@@ -10,7 +10,7 @@
     {{-- Subcopy --}}
     @slot('subcopy')
         @component('mail::subcopy')
-            @component('mail::button', ['url' => 'http://localhost:4200/verification-account-signup?verify='.$verify])
+            @component('mail::button', ['url' => 'https://youtubekids-fronted.herokuapp.com/verification-account-signup?verify='.$verify])
                 Confirm account
             @endcomponent
         @endcomponent
