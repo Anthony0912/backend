@@ -225,7 +225,7 @@ class PlayListController extends Controller
 
     private function findUrl($object){
         foreach ($object as $value) {
-            $value->url = $this->getUrl($value->url);
+            $value->url =$value->url;
         }
         return $object;
     }
