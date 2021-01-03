@@ -38,9 +38,9 @@ Route::group([
     Route::delete('video/{id}', 'VideoController@videoDelete');
 
     //playlist
-    Route::get('profile/playlists/{id}', 'playListController@showPlaylistInProfile');
+    Route::get('profile/playlists/{id}', 'PlayListController@showPlaylistInProfile');
     Route::get('profile/search/{id}/{search}', 'PlayListController@getVideosSearch');
-    Route::get('profile/playlists/videos/{id}', 'playListController@getVideosInProfile');
+    Route::get('profile/playlists/videos/{id}', 'PlayListController@getVideosInProfile');
     Route::post('playlistCreate', 'PlayListController@playlistCreate');
     Route::post('videoPlaylistCreate', 'PlayListController@videoPlaylistCreate');
     Route::get('videoPlaylist/{id_user}/{id_playlist}', 'PlayListController@videoPlaylist');
